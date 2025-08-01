@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+   <item
+       android:id="@+id/lockerless"
+       android:title="@string/lockerless"
+       />
+
+   <item
+       android:id="@=id/mysterious_benifactor"
+       android:title="@string/mystrious_benifactor"
+       />
+</menu>
