@@ -1,60 +1,38 @@
-from flask import Flask, render_template, request
-import mysql.connector
+from flask import*
+from flask_mail import*
+from random import*
 
 app = Flask(__name__)
 
+app.config["MAIL_SERVER"] = 'smtp.gmail.com'
+app.config["MAIL_PORT"] = 465
+app.config["MAIL_USERNAME"] = 'pete6767676@gmail.com'
+app.config["MAIL_PASSWORD"] = '6666677777778910'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
 
-@app.route("/details", methods=['POST', 'GET'])
-def details():
-    user_name = request.form['user_name']
-    phone_number = request.form['contact_number']
-    number_of_items = request.form['number_of_items']
-    total_amout = request.form['amount']
-    current_date = request.form['current_date']
-    mydb = mysql.connector.conect(
-        host='remotemysql.com',
-        user='uLj9FaRVB',
-        password='qQvo5rGf3i',
-        database='uLj9FaRVB'
-    mycursor = mydb.cursor()
-    mycursor.execute('CRATE TABLE Customer_Details (Customer_Name varchar(225),phone_Number varchar(10), Number_of_Items int(11), Total_Amount int (11), Date_of_Purchase date)'
-                       )
-        
-    mycursor.execute(
-        'INSERT INTO Customer_Details VALUES (%s, %s, %s, %s, %s)',
-        (user_name, phone_number, number_of_items, total_amout,
-          current_date ))
-            mydb.commit()
-            return render_template('page.html')
+otp = randint(000000,999999)
 
-@app.route('/winner', methods=['POST', 'GET'])
-def winner():
-    mydb = mysql.connector.connect( host='remotemysql.com',
-                                    user='uLj9FaRVB',
-                                    password='qQvo5rGf3i',
-                                    database='uLj9FaRVB')  
-    mycursor = mydb.cursor()
-    mycursor.execute(
-        'SELECT * FROM Customer_Details WHERE Date_of_Purchase ='
-        'CURRENT_DATE ORDER BY Total_Amount DESC'
-             )
-             account = mycursor.fetchone()
-             print(account)
-             if account:
-                 user_name = accout[0]
-                 phone_number = account[0]
-                 return render_template('page.html'
-                                        user_name=user_name
-                                        phone_number=phone_number)
-            else:
-            return render_template('page.html')
+@app.route('/verify',methods = ["POST"])
+def verify():
+    email = request.form["email"]
+    msg = Message('OTP',sender = 'peterand156967@gmail.com', recipients = [email])
+    msg.body = str(otp)
+    Mail.send(msg)
+    return render_template('page.html')
 
-@app .route('/')
+@app.route('/vaildate',method = ['POST'])
+def vaildate():
+    user_otp = request.form["otp"]
+    if otp == int(user_otp):
+        return "<h3>email verification successful</h3>"
+    else:
+        return "<h3>Verification failed otp does not match</h3>"
+
+@app.route('/')
 def index():
     return render_template('index.html')
 
 
 
-app.run(host='0.0.0.0', port=800)
-
-)
+app.run(host='0.0.0.0', port=8080)
